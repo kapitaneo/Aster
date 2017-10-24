@@ -12,8 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using AsterNET.Manager;
-using AsterNET.Manager.Event;
+//using AsterNET.Manager;
+//using AsterNET.Manager.Event;
+using Asterisk.NET;
+using Asterisk.NET.Manager;
+using Asterisk.NET.Manager.Event;
 
 namespace Asterix
 {
@@ -27,30 +30,40 @@ namespace Asterix
         public MainWindow()
         {
             InitializeComponent();
+            //astCon = new ManagerConnection("193.93.187.217", 5060, "901", "9d49c145849b09428e2e03a58477fa2f");
+            astCon = new ManagerConnection("sip2sip.info", 5060, "cnetamconsoft", "fuckyou1987");
+            //astCon.PingInterval = 10000;
+            //astCon.PingInterval = 0;
+            astCon.LogChannel += AstCon_LogChannel; 
+            //astCon.FireAllEvents = true;
+            //astCon.
+                astCon.NewChannel += manager_NewChannel;
+                astCon.NewState += AstCon_NewState;
+                astCon.NewCallerId += AstCon_NewCallerId;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            astCon = new ManagerConnection("193.93.187.217", 5060, "901", "861163e0f5989dba4149faf3265ea8ad");
-            astCon.NewChannel+= manager_NewChannel;
-            astCon.NewState += AstCon_NewState;
-            astCon.NewCallerId += AstCon_NewCallerId;
-            astCon.FireAllEvents = true;
-            //astCon.
+            //astCon = new ManagerConnection("193.93.187.217", 5060, "902", "861163e0f5989dba4149faf3265ea8ad");
             try
             {
                 // Uncomment next 2 line comments to Disable timeout (debug mode)
-                astCon.DefaultResponseTimeout = 15000;
-                astCon.DefaultEventTimeout = 15000;
-              
-               astCon.Login();
+                astCon.DefaultResponseTimeout = 5000;
+                astCon.DefaultEventTimeout = 5000;
+
+                astCon.Login();
             }
-            catch (Exception ex)
+            catch (Asterisk.NET.Manager.TimeoutException ex)
             {
                 MessageBox.Show("Error connect\n" + ex.Message);
                 astCon.Logoff();
                 //	this.Close();
             }
+        }
+
+        private void AstCon_LogChannel(object sender, LogChannelEvent e)
+        {
+            System.Diagnostics.Debug.WriteLine(string.Format("Aster : {0} {1} @ {2}", e.DateReceived, e.Server, e.Channel));
         }
 
         private void AstCon_NewState(object sender, NewStateEvent e)
@@ -67,7 +80,7 @@ namespace Asterix
                     {
                         case "ringing":
                             { 
-                                MessageBox.Show($"Incoming call from {e.Connectedlinenum} ({e.ConnectedLineName})");
+                                MessageBox.Show($"Incoming call from {e.CallerIdNum} ({e.Channel})");
                             }
                             break;
                     }
@@ -81,7 +94,7 @@ namespace Asterix
         }
 
         private String curChannel;
-        void manager_NewChannel(object sender, AsterNET.Manager.Event.NewChannelEvent e)
+        void manager_NewChannel(object sender, NewChannelEvent e)
         {
             //if (e.CallerIdNum != userrow.number)
             //    return;
