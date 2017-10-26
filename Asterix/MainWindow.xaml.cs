@@ -12,11 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-//using AsterNET.Manager;
-//using AsterNET.Manager.Event;
+using AsterNET.Manager;
+using AsterNET.Manager.Event;
 using Asterisk.NET;
-using Asterisk.NET.Manager;
-using Asterisk.NET.Manager.Event;
+//using Asterisk.NET.Manager;
+//using Asterisk.NET.Manager.Event;
 
 namespace Asterix
 {
@@ -31,7 +31,8 @@ namespace Asterix
         {
             InitializeComponent();
             //astCon = new ManagerConnection("193.93.187.217", 5060, "901", "9d49c145849b09428e2e03a58477fa2f");
-            astCon = new ManagerConnection("sip2sip.info", 5060, "cnetamconsoft", "fuckyou1987");
+            astCon = new ManagerConnection("193.93.187.217", 5038, "admin", "b7bf97981cd5fbdadb6518d6c5af19b4");
+            //astCon = new ManagerConnection("sip2sip.info", 5060, "cnetamconsoft", "fuckyou1987");
             //astCon.PingInterval = 10000;
             //astCon.PingInterval = 0;
             astCon.LogChannel += AstCon_LogChannel; 
@@ -48,12 +49,12 @@ namespace Asterix
             try
             {
                 // Uncomment next 2 line comments to Disable timeout (debug mode)
-                astCon.DefaultResponseTimeout = 5000;
-                astCon.DefaultEventTimeout = 5000;
+                //astCon.DefaultResponseTimeout = 15000;
+                //astCon.DefaultEventTimeout = 15000;
 
                 astCon.Login();
             }
-            catch (Asterisk.NET.Manager.TimeoutException ex)
+            catch (AsterNET.Manager.TimeoutException ex)
             {
                 MessageBox.Show("Error connect\n" + ex.Message);
                 astCon.Logoff();
